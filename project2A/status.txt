@@ -1,0 +1,480 @@
+================================================= PART 1 ===========================================
+
+I have completed part1 successfully. Please find the output below for nthreads is 5. Output for 50 threads is there in part1-output.txt file.
+
+I have placed pthread_join() function in a for loop which runs for nthreads.
+The pthread_join() function waits for the thread specified in first argument of the pthread_join() function to terminate.  
+If that thread has already terminated, then pthread_join() returns immediately.  
+
+===============================================
+Anushas-MacBook-Pro:project2 anusha$ ./part1 5
+Anusha Meka, input is 5 threads
+This is philosopher 1
+This is philosopher 3
+This is philosopher 2
+This is philosopher 0
+This is philosopher 4
+5 threads have been joined successfully now
+===============================================
+
+
+
+
+=============================================== PART2 =============================================
+
+I have successfully completed the part2.
+If the input is 3 threads and run the program for 1500 times and saw deadlock situation for 6 times.
+If the input is 5 threads and run the program for 500 times and saw deadlock situation for 1 time.
+If the input is 10 threads and run the program for 30,000 times and deadlock situation is not encountered.
+If the input is 50 threads and run the program for 30,000 times and deadlock situation is not encountered.
+
+Finally, from the above results, I think it is easier to see the deadlock, with the small number of threads.
+
+Please find the output of this part when ran for 50 threads for 1 time.
+================================================
+Anushas-MacBook-Pro:project2 anusha$ ./part2 50
+Philosopher 9 is eating
+Philosopher 4 is eating
+Philosopher 17 is eating
+Philosopher 6 is eating
+Philosopher 2 is eating
+Philosopher 14 is eating
+Philosopher 12 is eating
+Philosopher 27 is eating
+Philosopher 22 is eating
+Philosopher 31 is eating
+Philosopher 24 is eating
+Philosopher 42 is eating
+Philosopher 20 is eating
+Philosopher 35 is eating
+Philosopher 33 is eating
+Philosopher 40 is eating
+Philosopher 46 is eating
+Philosopher 23 is eating
+Philosopher 38 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 43 is eating
+Philosopher 5 is eating
+Philosopher 16 is eating
+Philosopher 8 is eating
+Philosopher 11 is eating
+Philosopher 34 is eating
+Philosopher 26 is eating
+Philosopher 41 is eating
+Philosopher 13 is eating
+Philosopher 10 is eating
+Philosopher 30 is eating
+Philosopher 32 is eating
+Philosopher 7 is eating
+Philosopher 19 is eating
+Philosopher 21 is eating
+Philosopher 45 is eating
+Philosopher 29 is eating
+Philosopher 25 is eating
+Philosopher 18 is eating
+Philosopher 44 is eating
+Philosopher 37 is eating
+Philosopher 39 is eating
+Philosopher 28 is eating
+Philosopher 50 is eating
+Philosopher 15 is eating
+Philosopher 36 is eating
+Philosopher 49 is eating
+Philosopher 48 is eating
+Philosopher 47 is eating
+===================================================
+
+
+
+=============================================== PART 3 =============================================
+
+I have completed the part 3 successfully. I ran part3 for 20 times with 5 threads and 50 threads which confirms that there is no deadlock anymore.
+Please find the eating order of the 50 philosophers below.
+
+================================================
+Anushas-MacBook-Pro:project2 anusha$ ./part3 50
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 4 is eating
+Philosopher 5 is eating
+Philosopher 6 is eating
+Philosopher 7 is eating
+Philosopher 8 is eating
+Philosopher 9 is eating
+Philosopher 10 is eating
+Philosopher 11 is eating
+Philosopher 12 is eating
+Philosopher 13 is eating
+Philosopher 14 is eating
+Philosopher 15 is eating
+Philosopher 16 is eating
+Philosopher 17 is eating
+Philosopher 18 is eating
+Philosopher 19 is eating
+Philosopher 20 is eating
+Philosopher 21 is eating
+Philosopher 22 is eating
+Philosopher 23 is eating
+Philosopher 24 is eating
+Philosopher 25 is eating
+Philosopher 26 is eating
+Philosopher 27 is eating
+Philosopher 28 is eating
+Philosopher 29 is eating
+Philosopher 30 is eating
+Philosopher 31 is eating
+Philosopher 32 is eating
+Philosopher 33 is eating
+Philosopher 34 is eating
+Philosopher 35 is eating
+Philosopher 36 is eating
+Philosopher 37 is eating
+Philosopher 38 is eating
+Philosopher 39 is eating
+Philosopher 40 is eating
+Philosopher 41 is eating
+Philosopher 42 is eating
+Philosopher 43 is eating
+Philosopher 44 is eating
+Philosopher 45 is eating
+Philosopher 46 is eating
+Philosopher 47 is eating
+Philosopher 48 is eating
+Philosopher 49 is eating
+Philosopher 50 is eating
+===================================================
+
+Here is the code snippet which helped me to enforce the order of eating.
+
+ 	pthread_mutex_lock(&chopstick);
+        while(philosopherId != threadIndex){
+                pthread_cond_wait(&eat_turn, &chopstick);}
+
+For part2, I have initialized a seperate mutex for each chopstick.
+For part3, I have used single mutex to handle all the chopsticks.
+Here, I make sure that the eat_turn conditional variable holds all other threads below the order to wait until the locked chopstick mutex is unlocked.
+In my code, all the threads down the order will wait if the thread index is not equal to the integer variable philosopherId which keeps track of the threads which already ate and yet to eat.
+
+
+==================================================== PART 4 ========================================
+I am able to successfully complete this part.
+I have solved the deadlock situation that is seen in part2 using pthread_mutex_trylock() and this is confirmed by running the program for 100 times with 3 threads, where I have seen deadlock situation frequently in part2.
+Please find the output below for 3 threads ran 100 times.
+
+Here, is the code snippet which explains the idea of solving this part using pthread_mutex_trylock().
+
+	left = pthread_mutex_trylock(&chopstick[threadIndex]);
+        right = pthread_mutex_trylock(&chopstick[(threadIndex+1)%nthreads]);
+        if (left ==0 || right ==0){
+                pthread_mutex_unlock(&chopstick[threadIndex]);
+                pthread_mutex_unlock(&chopstick[(threadIndex+1)%nthreads]);
+        }
+
+
+I have imposed pthread_mutex_trylock on both the left and right chopsticks of a philosopher, and if the value returned from pthread_mutex_trylock is zero, then left and right chopsticks are under the control of the philosopher, then the philosopher is free to unlock the mutex that is held on his left and right chopsticks.
+
+========================================================
+Anushas-MacBook-Pro:project2 anusha$ bash run.sh
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 1 is eating
+Philosopher 2 is eating
+Philosopher 3 is eating
+Philosopher 2 is eating
+Philosopher 1 is eating
+==========================================================
